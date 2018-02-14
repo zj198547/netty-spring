@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	    http://www.springframework.org/schema/beans/spring-beans-4.3.xsd
+	    http://www.springframework.org/schema/context    
+        http://www.springframework.org/schema/context/spring-context-4.3.xsd
+		http://www.springframework.org/schema/mvc
+		http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd
+		http://www.springframework.org/schema/aop
+		http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
+		http://www.springframework.org/schema/task
+		http://www.springframework.org/schema/task/spring-task-4.3.xsd ">
+
+	<context:annotation-config />
+	<context:component-scan base-package="com.dundun.nettyspring.*" />
+	<mvc:default-servlet-handler />
+	<mvc:annotation-driven />
+
+	<bean
+		class="org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor" />
+
+	<!-- 加载配置文件 -->
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:application.properties</value>
+			</list>
+		</property>
+	</bean>
+
+	<!--采用以下配置支持controller中返回String，否则会当成是视图名称和路劲处理 -->
+	<bean
+		class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter">
+		<property name="messageConverters">
+			<list>
+				<!-- String结果数据支持，此解析器要放在JSON解析器前 -->
+				<ref bean="stringHttpMessageConverter" />
+				<!-- JSON结果数据支持(使用fastjson) -->
+				<ref bean="fastJsonHttpMessageConverter" />
+				<!-- JSON结果数据支持(使用jackson) -->
+				<!-- <ref bean="mappingJacksonHttpMessageConverter" /> -->
+			</list>
+		</property>
+	</bean>
+
+	<!-- String转化器 -->
+	<bean id="stringHttpMessageConverter"
+		class="org.springframework.http.converter.StringHttpMessageConverter">
+		<property name="supportedMediaTypes">
+			<list>
+				<!-- 这里顺序不能反，一定先写text/html,不然ie下出现下载提示 -->
+				<value>text/html;charset=UTF-8</value>
+				<value>application/json;charset=UTF-8</value>
+			</list>
+		</property>
+	</bean>
+
+	<!-- JSON转化器(fastjson版本) -->
+	<bean id="fastJsonHttpMessageConverter"
+		class="com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter4">
+		<property name="supportedMediaTypes">
+			<list>
+				<!-- 这里顺序不能反，一定先写text/html,不然ie下出现下载提示 -->
+				<value>text/html;charset=UTF-8</value>
+				<value>application/json;charset=UTF-8</value>
+			</list>
+		</property>
+		<property name="fastJsonConfig">
+			<bean class="com.alibaba.fastjson.support.config.FastJsonConfig">
+				<property name="dateFormat" value="yyyy-MM-dd HH:mm:ss" />
+				<property name="serializerFeatures">
+					<array>
+						<!--此配置用于将Date类型转化为dateFormat对应的格式 -->
+						<value>WriteDateUseDateFormat</value>
+					</array>
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+</beans>

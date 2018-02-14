@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration xmlns:log4j="http://jakarta.apache.org/log4j/"
+	debug="false">
+	<appender name="CONSOLE" class="org.apache.log4j.ConsoleAppender">
+		<param name="Target" value="System.out" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{ABSOLUTE} %c:%L%x[%t] %-5p- %m%n" />
+		</layout>
+	</appender>
+	<appender name="filelog_daily" class="org.apache.log4j.DailyRollingFileAppender">
+		<param name="File" value="log/apptask${hostserver}.log" />
+		<param name="DatePattern" value="'apptask.'yyyy-MM-dd'.log'" />
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern"
+				value="[%d{yyyy-MM-dd HH:mm:ss\} %-5p] [%t] (%c:%L) - %m%n" />
+		</layout>
+	</appender>
+	<appender name="filelog_appender" class="org.apache.log4j.RollingFileAppender">
+		<!-- 设置File参数：日志输出文件名 -->
+		<param name="File" value="log/apptask.log" />
+		<!-- 设置是否在重新启动服务时，在原有日志的基础添加新日志 -->
+		<param name="Append" value="true" />
+		<!-- 设置文件大小 -->
+		<param name="MaxFileSize" value="10MB" />
+		<!-- 设置文件备份 -->
+		<param name="MaxBackupIndex" value="10000" />
+		<!-- 设置输出文件项目和格式 -->
+		<layout class="org.apache.log4j.PatternLayout">
+			<param name="ConversionPattern" value="%d{yyyy-MM-dd HH:mm:ss} %-5p (%c:%L)- %m%n" />
+		</layout>
+	</appender>
+	<logger name="com.hx">
+		<level value="INFO" />
+		<appender-ref ref="filelog_daily" />
+	</logger>
+	<logger name="org.springframework">
+		<level value="INFO" />
+	</logger>
+	<logger name="io.netty">
+		<level value="INFO" />
+	</logger>
+	<logger name="org.mybatis">
+		<level value="INFO" />
+	</logger>
+	<root>
+		<priority value="DEBUG" />
+		<appender-ref ref="CONSOLE" />
+	</root>
+</log4j:configuration>
